@@ -1,4 +1,106 @@
-* 100;
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monte Carlo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+</head>
+
+<body>
+    <main class="container">
+        <h1>
+            Aplicación para resolver una integral usando el método de Monte Carlo
+        </h1>
+        <p>
+            La integral es:
+            <math>
+                <munderover>
+                    <mo>&int;</mo>
+                    <mi>2</mi>
+                    <mi>3</mi>
+                </munderover>
+                <mfenced separators="">
+                    <mn>3</mn>
+                    <msup>
+                        <mi>x</mi>
+                        <mn>2</mn>
+                    </msup>
+                    <mo>+</mo>
+                    <mn>2</mn>
+                    <mi>x</mi>
+                </mfenced>
+                <mi>dx</mi>
+            </math>
+        </p>
+        <p>Ingrese el número de simulaciones:</p>
+        <form id="form">
+            <input type="number" id="simulaciones" min="1" value="1000000" />
+            <button type="submit">Calcular</button>
+        </form>
+        <p>
+            Resultado matemático de la integral: <b><span id="real"></span></b>
+        </p>
+        <p>
+            Resultado aproximado de la integral por el método de Monte Carlo:
+            <b><span id="aproximado"></span></b>
+        </p>
+        <p>
+            Porcentaje (%) de error entre valor real (matemático) y el valor
+            aproximado obtenido de la simulación: <b><span id="error"></span></b>
+        </p>
+    </main>
+</body>
+<script>
+    // Función que calcula el valor matemático de la integral
+    function valorReal() {
+        var a = 3;
+        var b = 2;
+        var limiteInferior = 2;
+        var limiteSuperior = 3;
+        var C = 0;
+        var valorSuperior = (a / 3) * Math.pow(limiteSuperior, 3) + (b / 2) * Math.pow(limiteSuperior, 2) + C;
+        var valorInferior = (a / 3) * Math.pow(limiteInferior, 3) + (b / 2) * Math.pow(limiteInferior, 2) + C;
+        var resultado = valorSuperior - valorInferior;
+        return resultado;
+    }
+
+    // Función que calcula el valor aproximado de la integral usando el método de Monte Carlo
+    function valorAproximado(n) {
+        // n es el número de simulaciones
+        // Contador de puntos que caen debajo de la curva
+        var contador = 0;
+        // Iteramos n veces
+        for (var i = 0; i < n; i++) {
+            // Generamos un punto aleatorio (x,y) en el rectángulo [2,3] x [0,33]
+            var x = Math.random() * (3 - 2) + 2;
+            var y = Math.random() * (33 - 0) + 0;
+            // Evaluamos la función 3x^2+2x en el punto x
+            var f = 3 * Math.pow(x, 2) + 2 * x;
+            // Si el punto y está debajo de la curva f, incrementamos el contador
+            if (y < f) {
+                contador++;
+            }
+        }
+        // Calculamos el área aproximada del rectángulo multiplicando su base por su altura
+        var areaRectangulo = (3 - 2) * (33 - 0);
+        // Calculamos el área aproximada de la región bajo la curva usando la proporción de puntos que cayeron debajo de la curva
+        var areaRegion = (areaRectangulo * contador) / n;
+        // Se retorna el área aproximada como el valor aproximado de la integral
+        return areaRegion;
+    }
+
+
+    // Función que calcula el porcentaje de error entre el valor real y el valor aproximado
+    function porcentajeError(real, aproximado) {
+        // Usamos la fórmula del error relativo porcentual
+        // Si el valor aproximado es mayor que el real, el error es negativo
+        if (aproximado > real) {
+            return -(Math.abs(real - aproximado) / real) * 100;
+        } // Si no, el error es positivo
+        else {
+            return (Math.abs(real - aproximado) / real) * 100;
         }
     }
 
